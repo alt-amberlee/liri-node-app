@@ -92,6 +92,22 @@ request(queryUrl, function(err, response, body) {
     })
     // console.log("Error.")
 
+function getRottenTomatoesRatingObject(data) {
+    return data.Ratings.find(function(item) {
+        return item.Source === "Rotten Tomatoes";
+    })
+}
+
 function getRottenTomatoesRatingValue(data) {
-    return getRottenTomatoesRatingObject(data).value;
+    return getRottenTomatoesRatingObject(data).Value;
+}
+
+function showSomeInfo() {
+    fs.readFile('random.txt', 'utf8', function(err, data) {
+        if (err) {
+            return console.log(err);
+        }
+        var dataArr = data.split(',');
+        UserInputs(dataArr[0], dataArr[1]);
+    })
 }
