@@ -1,9 +1,10 @@
 require("dotenv").config();
 
 
-var request = require("request");
 var fs = require("fs");
 var keys = require("./keys.js");
+var moment = require('moment');
+var axios = require('axios');
 var Spotify = require('node-spotify-api');
 var spotify = new Spotify(keys.spotify);
 var userOption = process.argv[2];
@@ -28,86 +29,90 @@ function UserInputs(userOption, inputParameter) {
         default:
             console.log("Invalid Command. Please try again.")
     }
-}
+};
 
 function showConcertInfo(artist) {
     console.log(artist);
     var queryUrl = "https://rest.bandsintown.com/artists/" + artist + "/events?app_id=codingbootcamp";
-    request(queryUrl, function(error, body) {
-        // console.log(response.body[0]);
+    axios.get(queryUrl).then(
 
-        var concerts = JSON.parse(body);
-        // console.log(concerts[0]);
-        for (var i = 0; i < concerts.length; i++) {
-
-            console.log("Name of the venue: " + concerts[0].venue.name + "\n");
-            console.log("Venue location: " + concerts[0].venue.location + "\n");
-            console.log("Date of the Event (use moment to format this as 'MM/DD/YYYY': " + concerts[0].datetime.slice(0, 10) + "\n");
+        function(response) {
+            if (response.data[0].venue != undefined) {
+                console.log("Name of the venue: " + response.data[0].venue.name + "\n");
+                console.log("Venue location: " + response.data[0].venue.city + "\n");
+                var eventDateTime = moment(response.data[0].datetime).format('MM/DD/YYYY');
+                console.log("Date of the Event: " + eventDateTime + "\n");
+            } else {
+                console.log("No results.");
+            }
         }
+    ).catch(function(error) {
+        console.log(error);
     })
-}
-// console.log("Error.")
+};
 
 
 function showSongInfo(song) {
-    if (song === undefined) {
-        song = (" ")
-    }
-    spotify.search({ type: 'track', query: song }, function(err, data) {
-        if (err) {
-            console.log('Error occurred: ' + err);
-            return;
-        }
+    spotify.search({ type: 'track', query: song })
+        .then(function(response) {
+            if (response.tracks.total === 0) {
+                errorForSpotify();
+            } else {
+                console.log("Artist(s): " + response.tracks.items[0].artists[0].name);
+                console.log("The song's name: " + response.tracks.items[0].name);
+                console.log("A preview link: " + response.tracks.items[0].preview_url);
+            }
+        }).catch(function(error) {
+            console.log(error);
+            console.log("No results for song request. Default results for 'The Sign' by Ace of Base");
+        })
+};
 
-        var songs = data.tracks.items;
-        console.log(data.tracks.items[0].album.artists);
-        for (var i = 0; i < songs.length; i++) {
+function errorForSpotify() {
+    spotify.search({ type: 'track', query: 'The Sign' })
+        .then(function(response) {
+            for (var i = o; i < response.tracks.items.length; i++) {
+                if (response.tracks.items[i].artists[0].name === "Ace of Base") {
+                    console.log("Artist(s): " + response.tracks.items[0].artists[0].name);
+                    console.log("The song's name: " + response.tracks.items[0].name);
+                    console.log("A preview link: " + response.tracks.items[0].preview_url);
+                    i = response.tracks.items.length;
+                }
+            }
+        }).catch(function(error) {
+            console.log(error);
+            console.log("No results found.");
+        })
+};
 
-            console.log("Artist(s): " + songs[i].artists[0].name);
-            console.log("The song's name: " + songs[i].name);
-            console.log("A preview link of the song from Spotify: " + songs[i].preview_url); // The album that the song is from
+function showMovieInfo(movie) {
+    axios.get("http://www.omdbapi.com/?t=" + movie + "&y=&plot=short&apikey=trilogy")
+        .then(function(response) {
+            if (response.data.Title != undefined) {
+                console.log("Title of the movie: " + response.data.Title);
+                console.log("Year the movie came out: " + response.data.Year);
+                console.log("IMDB Rating of the movie: " + response.data.imdbRating);
+                console.log("Rotten Tomatoes Rating of the movie: " + response.data.tomatoRating);
+                console.log("Country where the movie was produced: " + response.data.Country);
+                console.log("Language of the movie: " + response.data.Language);
+                console.log("Plot of the movie: " + response.data.Plot);
+                console.log("Actors in the movie: " + response.data.Actors);
 
-        }
-    });
-}
-
-function showMovieInfo(movie)
-if (movie === undefined) {
-    movie = ("Mr. Nobody")
-    console.log(("If you haven't watched 'Mr. Nobody,' then you should: http://www.imdb.com/title/tt0485947/ "))
-    console.log("It's on Netflix!")
-}
-var queryUrl = "http://www.omdbapi.com/?t=" + movie + "&y=&plot=short&apikey=trilogy";
-request(queryUrl, function(err, response, body) {
-        var movies = JSON.parse(body);
-
-        console.log("Title of the movie: " + movies.Title);
-        console.log("Year the movie came out: " + movies.Year);
-        console.log("IMDB Rating of the movie: " + movies.imbdRating);
-        console.log("Rotten Tomatoes Rating of the movie: " + getRottenTomatoesRatingValue(movies));
-        console.log("Country where the movie was produced: " + movies.Country);
-        console.log("Language of the movie: " + movies.Language);
-        console.log("Plot of the movie: " + movies.Plot);
-        console.log("Actors in the movie: " + movies.Actors);
-    })
-    // console.log("Error.")
-
-function getRottenTomatoesRatingObject(data) {
-    return data.Ratings.find(function(item) {
-        return item.Source === "Rotten Tomatoes";
-    })
-}
-
-function getRottenTomatoesRatingValue(data) {
-    return getRottenTomatoesRatingObject(data).Value;
-}
+            } else {
+                showMovieInfo("Mr. Nobody");
+            }
+        }).catch(function(error) {
+            console.log(error);
+            console.log("No results found.")
+        })
+};
 
 function showSomeInfo() {
-    fs.readFile('random.txt', 'utf8', function(err, data) {
-        if (err) {
-            return console.log(err);
-        }
+    fs.readFile('random.txt', 'utf8', function(error, data) {
         var dataArr = data.split(',');
-        UserInputs(dataArr[0], dataArr[1]);
+        showMovieInfo(dataArr[0], dataArr[1]);
+        if (error) {
+            return console.log(error);
+        }
     })
-}
+};
