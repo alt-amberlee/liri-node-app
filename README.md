@@ -2,11 +2,7 @@
 
 Liri is a Language Interpretation and Recognition Interface. Liri will be a command line node app that takes in parameters and gives you back data.
 
-**High-Level Overview:**
-- navigate to root of file to open in terminal
-
-- run 'npm init -y' to initialize a package.json file
-
+**Overview:**
 - liri.js can take in one of the following commands: 
     - concert-this
     - spotify-this-song
@@ -21,7 +17,7 @@ Liri is a Language Interpretation and Recognition Interface. Liri will be a comm
     - Name of the venue
     - Venue location
     - Date of the Event (use moment to format this as "MM/DD/YYYY")
-
+![concert](images/concert-this.png)
 
 - node liri.js spotify-this-song <song name here>
 
@@ -35,7 +31,7 @@ Liri is a Language Interpretation and Recognition Interface. Liri will be a comm
     - The album that the song is from
 
 - If no song is provided then the program will default to "The Sign" by Ace of Base.
-
+![song](images/spotify-this-song.png)
 
 - node liri.js movie-this <movie name here>
 
@@ -53,13 +49,14 @@ Liri is a Language Interpretation and Recognition Interface. Liri will be a comm
     - Actors in the movie.
 
 - If the user doesn't type a movie in, the program will output data for the movie 'Mr. Nobody.'
-
+![movie](images/movie-this.png)
 
 - node liri.js do-what-it-says
 
 - Using the fs Node package, LIRI will take the text inside of random.txt and then use it to call one of LIRI's commands.
 
 - This will run spotify-this-song for "I Want it That Way," as follows the text in random.txt.
+![random](images/do-what-it-says.png)
 
 Technologies used-
 
