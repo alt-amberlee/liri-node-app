@@ -2,6 +2,18 @@
 
 Liri is a Language Interpretation and Recognition Interface. Liri will be a command line node app that takes in parameters and gives you back data.
 
+**Setup**
+- clone the repo
+- run npm install with the following packages:
+    - 'Node-Spotify-API'
+    - 'Axios' for IMDB and BandsInTown API data
+    - 'Moment'
+    - 'DotEnv' 
+- create a .env file in the same directory, in that file have the following:
+    - '# Spotify API keys'
+    - 'SPOTIFY_ID=your-spotify-ID-here'
+    - 'SPOTIFY_SECRET=your-spotify-secret-here'
+
 **Overview:**
 - liri.js can take in one of the following commands: 
     - concert-this
