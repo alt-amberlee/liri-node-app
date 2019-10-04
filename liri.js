@@ -109,10 +109,27 @@ function showMovieInfo(movie) {
 
 function showSomeInfo() {
     fs.readFile('random.txt', 'utf8', function(error, data) {
-        var dataArr = data.split(',');
-        showMovieInfo(dataArr[0], dataArr[1]);
-        if (error) {
-            return console.log(error);
+
+        var randomTxt = data.split(',');
+        var userOption = randomTxt[0];
+        var inputParameter = randomTxt[1];
+
+        switch (userOption) {
+            case 'concert-this':
+                showConcertInfo(inputParameter);
+                break;
+            case 'spotify-this-song':
+                showSongInfo(inputParameter);
+                break;
+            case 'movie-this':
+                showMovieInfo(inputParameter);
+                break;
+            case 'do-what-it-says':
+                showSomeInfo();
+                break;
+            default:
+                console.log("Invalid Command. Please try again.")
         }
+
     })
 };
